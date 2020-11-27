@@ -1,7 +1,7 @@
 Fork of [Reverie](https://github.com/amitmerchant1990/reverie), minus the fluff.
 
 My steps:
-1. fork this repo, and turn on gh-pages
+1. use [this repo](https://github.com/jiangts/blog-template) as a template, and turn on gh-pages
 2. update `_config.yml`
   - especially the name, description, avatar (place square image in
     `images/...`), url, and baseurl

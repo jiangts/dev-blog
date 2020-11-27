@@ -4,6 +4,11 @@ title: Resources
 permalink: /resources/
 ---
 
-## Resources page...
-Put whatever you want here...
-Or remove this page.
+
+
+RSS feed [here](https://jiangts.github.io/dev-blog/feed.xml)
+
+Sitemap [here](https://jiangts.github.io/dev-blog/sitemap.xml)
+
+Blog template [here](https://github.com/jiangts/blog-template)
+
