@@ -63,7 +63,7 @@ But, it was still unsatisfying: I had to remember the new API of `SelfSufficient
 
 So, I did some home cooking. I knew the API I eventually wanted would be a "decorator" pattern: instead of re-writing a component, I want to use some simple function wrapper on the outside to convert it into a component whose `render` is isolated.
 
-One might think doing this would be pretty hard. I thought it would be, too... But after some tinkering, here's what I came up with:
+One might think doing this would be pretty hard. I thought it would be, too... But, as I found out, Mithril is delightfully simple. After some tinkering, here's what I came up with:
 
 #### Usage
 ```javascript
@@ -97,5 +97,7 @@ const IsolatedLoader = m.isolate(ExampleLoader, '.loader-container')
 #### Implementation
 todo: put code up with comments
 
-#### Note on self-sufficient components
+#### Additional notes
 todo: note bugs and fixes in the public implementation
+
+todo: note potential improvements needed to my implementation before conversion into a library
