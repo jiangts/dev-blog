@@ -67,14 +67,22 @@ One might think doing this would be pretty hard. I thought it would be, too... B
 
 #### Usage
 ```javascript
+// a normal component, except for: 
+// getting redraw from the component's fn argument, 
+// and using that function instead of m.redraw
 const ExampleLoader = ({ redraw=m.redraw }) => {
   let value, max
-  socket.on('progress', (data) => {
-    value = data.value
-    max = data.max
-    redraw()
-  })
   return {
+    oninit: vnode => {
+      socket.on('progress', (data) => {
+        value = data.value
+        max = data.max
+        redraw()
+      })
+    },
+    onremove: vnode => {
+      socket.off('progress')
+    },
     view: (vnode) => {
       return max && m("progress", { value, max })
     }
