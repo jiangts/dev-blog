@@ -17,35 +17,42 @@ Anyways, as I was making EVC, I found myself creating a lot of progress loaders 
 
 To make a progress loader "move" in Mithril, you need to call `m.redraw()`... but doing this all the time can cause other problems -- since redraws may prevent local updates to the DOM (e.g. typing into an `<input>` field), or otherwise cause the DOM to redraw when it's undesirable.
 
-To fix this, I googled something like "isolate mithril render" and found this GH issue "[Subtree rendering proposal](https://github.com/MithrilJS/mithril.js/issues/1907)". While following the convo, I found Isiah's [repo](https://github.com/isiahmeadows/mithril-helpers/blob/master/docs/self-sufficient.md) with support for "self-sufficient components", that receive their own redraw function (like this):
+To fix this, I googled something like "isolate mithril render" and found this GH issue "[Subtree rendering proposal](https://github.com/MithrilJS/mithril.js/issues/1907)". While following the convo, I found Isiah's [repo](https://github.com/isiahmeadows/mithril-helpers/blob/master/docs/self-sufficient.md) with support for "self-sufficient components", that receive their own redraw function. I took it, and decided to use it like this:
 
 ```javascript
-// Objects
-const Comp = {
-    oninit() { this.clicked = false },
-    view(vnode) {
-        return m(m.helpers.SelfSufficient, {root: m("div"), view: state => [
-            // we are passed in a state.redraw() function (which redraws only the SelfSufficient component)
-            // and a couple others functions, documented here:
-          	// https://github.com/isiahmeadows/mithril-helpers/blob/master/docs/self-sufficient.md
-            m(".foo", "What is this?"),
-            this.clicked
-                ? m(".bar.fail", "Why did you click me?!?")
-                : m(".bar", {
-                    onclick: () => { this.clicked = true },
-                }, "Just kidding, nothing to see here..."),
-        ]})
+const ExampleLoader = () => {
+	let redraw
+  let value, max
+  socket.on('progress', (data) => {
+		value = data.value
+    max = data.max
+    if(redraw) { redraw() }
+  })
+  return {
+    view: (vnode) => {
+      return m(m.helpers.SelfSufficient, {root: m("div"), view: state => {
+        redraw = state.redraw
+        return [
+          // we are passed in a state.redraw() function (which redraws only the SelfSufficient component)
+          // and a couple others functions, documented here:
+          // https://github.com/isiahmeadows/mithril-helpers/blob/master/docs/self-sufficient.md
+          max && m("progress", { value, max })
+        ]}
+      })
     }
+  }
 }
 ```
 
+As you can see, in the way I use mithril I realllly capitalize on function closures :smile:
 
+<br>
 
-This was really cool, and I successfully used it for a component or two.
+This was pretty cool, and I successfully used it for a component or two.
 
 But, it was still unsatisfying: I had to remember the new API of the `SelfSufficient` component, and it's kinda weird... The new redraw function only exists on `state`, but that's only in scope of the view function itself...
 
-
+<br>
 
 So, I did some home cooking. I knew the API I eventually wanted would be a "decorator" pattern: instead of re-writing a component, I want to use some simple function wrapper on the outside to convert it into a component whose `render` is isolated.
 
